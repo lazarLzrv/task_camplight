@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import Dispatcher from "../../store/dispatchers/popup";
+import DispatcherPopUp from "../../store/dispatchers/popup";
+import DispatcherUsers from "../../store/dispatchers/users";
 
 import { FaCheck } from "react-icons/fa";
 import { FaBan } from "react-icons/fa";
@@ -11,8 +12,8 @@ import Button from "../Button";
 import styles from "./styles.module.scss";
 
 const Index = () => {
-    const { togglePopUp } = Dispatcher();
-
+    const { togglePopUp } = DispatcherPopUp();
+    const { deleteUser } = DispatcherUsers();
     const { open, id } = useSelector((state) => state.popup);
 
     return (
@@ -32,18 +33,27 @@ const Index = () => {
 
                 <div className={styles.buttons}>
                     <div className={styles.btn_wrapper}>
-                        <Button className={styles.confirm}>
+                        <Button
+                            className={styles.confirm}
+                            onClick={() => {
+                                deleteUser(id);
+                                togglePopUp({
+                                    open: false,
+                                    id: 0,
+                                });
+                            }}
+                        >
                             <FaCheck /> yes
                         </Button>
 
                         <Button
                             className={styles.decline}
-                            onClick={() =>
+                            onClick={() => {
                                 togglePopUp({
                                     open: false,
                                     id: 0,
-                                })
-                            }
+                                });
+                            }}
                         >
                             <FaBan /> No
                         </Button>

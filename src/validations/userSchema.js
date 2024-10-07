@@ -12,7 +12,7 @@ const userSchema = yup.object().shape({
         .required("Phone number is required")
         .matches(
             /^(\+359\s?|\+359|0)(88|89|87|98)\d{1}(\s?\d{3}\s?\d{3}|\d{6})$/,
-            "Enter a valid Bulgarian phone number"
+            "Enter a valid Bulgarian phone number Example:+359883123123 , 0883123123"
         ),
 });
 

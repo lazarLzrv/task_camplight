@@ -10,33 +10,42 @@ import MainTitle from "../../components/MainTitle";
 import Pagination from "../../components/Pagination";
 
 import DispatcherPopUp from "../../store/dispatchers/popup";
-import DispatcherPagination from "../../store/dispatchers/pagination";
+import DispatcherUsers from "../../store/dispatchers/users";
 
 import styles from "./styles.module.scss";
 
-import { data } from "./sampleData";
-
 const Index = () => {
     const { togglePopUp } = DispatcherPopUp();
-    const { setTotalUsers } = DispatcherPagination();
+    const { setUsersCount } = DispatcherUsers();
+
+    const { allUsers } = useSelector((state) => state.users);
+    const { currentPage } = useSelector((state) => state.pagination);
 
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredUsers, setFilteredUsers] = useState(data);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+
+    const setVisibleUsers = (currentPage = 1) => {
+        const currentBatch = currentPage > 1 ? (currentPage - 1) * 10 : currentPage;
+        const visibleUsers = allUsers.slice(currentBatch - 1, currentBatch + 9);
+        setFilteredUsers(visibleUsers);
+    };
 
     useLayoutEffect(() => {
         if (searchTerm.length === 0) {
-            setTotalUsers(data.length);
+            setUsersCount(allUsers.length);
+            setVisibleUsers();
         } else {
-            setTotalUsers(filteredUsers.length);
+            setUsersCount(filteredUsers.length);
         }
-    }, [filteredUsers, searchTerm]);
-
-    const { currentPage } = useSelector((state) => state.pagination);
+    }, [searchTerm, allUsers]);
 
     useEffect(() => {
-        const currentBatch = currentPage > 1 ? (currentPage - 1) * 10 : currentPage;
-        const visibleUsers = data.slice(currentBatch - 1, currentBatch + 9);
-        setFilteredUsers(visibleUsers);
+        setFilteredUsers(allUsers);
+        setVisibleUsers(currentPage);
+    }, [allUsers]);
+
+    useEffect(() => {
+        setVisibleUsers(currentPage);
     }, [currentPage]);
 
     const handleSearch = (event) => {
@@ -45,31 +54,32 @@ const Index = () => {
         setSearchTerm(value);
 
         if (value) {
-            const filteredData = data.filter(({ name }) =>
+            const filteredData = allUsers.filter(({ name }) =>
                 name.toLowerCase().includes(value.toLowerCase())
             );
 
             setFilteredUsers(filteredData);
         } else {
-            setFilteredUsers(data);
+            setFilteredUsers(allUsers);
         }
     };
 
     return (
         <div className={styles.container}>
-            <MainTitle>transfers list</MainTitle>
+            <MainTitle>Users list</MainTitle>
 
-            <Button link='/create' className={styles.create}>
-                <FaPlusCircle />
-            </Button>
-
-            <input
-                type='text'
-                placeholder='Search by name'
-                value={searchTerm}
-                onChange={handleSearch}
-                className={styles.searchInput}
-            />
+            <div className={styles.top}>
+                <input
+                    type='text'
+                    placeholder='Search by name'
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    className={styles.searchInput}
+                />
+                <Button link='/create' className={styles.create}>
+                    <FaPlusCircle /> Create
+                </Button>
+            </div>
 
             <table className={styles.list}>
                 <thead>

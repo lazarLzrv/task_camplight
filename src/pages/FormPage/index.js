@@ -1,24 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+
+import { useSelector } from "react-redux";
+
 import { Formik, Form, Field, ErrorMessage } from "formik";
+
 import { FaArrowLeft } from "react-icons/fa";
 
 import Button from "../../components/Button";
 import MainTitle from "../../components/MainTitle";
+
+import DispatcherUsers from "../../store/dispatchers/users";
 
 import userSchema from "../../validations/userSchema";
 
 import styles from "./styles.module.scss";
 
 const Index = () => {
-    const initial = { name: "", email: "", phone: "" };
+    const { allUsers } = useSelector((state) => state.users);
+    const { updateUsersList } = DispatcherUsers();
 
+    const { id } = useParams();
+    const navigate = useNavigate();
+
+    const initial = { name: "", email: "", phone: "" };
     const [state, setState] = useState(initial);
 
+    useEffect(() => {
+        if (id && allUsers.length > 0) {
+            const currentUser = allUsers.find((item) => item.id === Number(id));
+            setState(currentUser);
+        }
+    }, [id, allUsers]);
+
     const onSubmit = (values, { setSubmitting }) => {
-        setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-        }, 400);
+        let updatedList = [];
+
+        setSubmitting(false);
+        if (id) {
+            updatedList = allUsers.map((item) => (item.id === Number(id) ? values : item));
+        } else {
+            updatedList = [...allUsers, { ...values, id: allUsers.length + 1 }];
+        }
+
+        updateUsersList(updatedList);
+        navigate("/");
     };
 
     return (
@@ -27,10 +53,15 @@ const Index = () => {
                 <Button link='/' className={styles.back}>
                     <FaArrowLeft />
                 </Button>
-                Create User
+                {id ? "Edit User" : "Create User"}
             </MainTitle>
 
-            <Formik initialValues={state} validationSchema={userSchema} onSubmit={onSubmit}>
+            <Formik
+                enableReinitialize
+                initialValues={state}
+                validationSchema={userSchema}
+                onSubmit={onSubmit}
+            >
                 {({ isSubmitting }) => (
                     <Form>
                         <div className={styles.input_group}>

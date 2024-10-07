@@ -10,18 +10,17 @@ import ButtonPagination from "../ButtonPagination";
 import styles from "./styles.module.scss";
 
 const Index = () => {
-    const { count, currentPage } = useSelector((state) => state.pagination);
+    const { currentPage } = useSelector((state) => state.pagination);
+    const { usersCount } = useSelector((state) => state.users);
     const { setCurrentPage } = Dispatcher();
 
     const [pages, setPages] = useState([]);
 
-    console.log(count);
-
     useLayoutEffect(() => {
-        const totalPages = Math.ceil(count / 10);
+        const totalPages = Math.ceil(usersCount / 10);
         const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
         setPages(pages);
-    }, [count]);
+    }, [usersCount]);
 
     return (
         <>
@@ -50,7 +49,7 @@ const Index = () => {
 
                 {pages.map((item, i) => {
                     return (
-                        <li>
+                        <li key={item}>
                             <ButtonPagination
                                 key={item}
                                 className={currentPage === i + 1 ? styles.current : ""}
