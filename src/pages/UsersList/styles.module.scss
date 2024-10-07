@@ -1,0 +1,45 @@
+.container {
+    margin: 50px auto;
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+}
+
+.list {
+    border-radius: 5px;
+    width: 100%;
+    th {
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+
+    th,
+    td {
+        border: 1px solid var(--grey);
+        text-align: center;
+        padding: 5px 10px;
+        vertical-align: middle;
+    }
+
+    .btn_wrapper {
+        display: flex;
+        gap: 5px;
+    }
+
+    .delete {
+        background: var(--red);
+        border-color: var(--red);
+    }
+
+    .edit {
+        background: var(--green);
+        border-color: var(--green);
+    }
+}
+
+.create {
+    width: 70px;
+    margin-left: auto;
+    background: var(--blue);
+    border-color: var(--blue);
+}
